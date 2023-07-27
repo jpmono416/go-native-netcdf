@@ -3107,7 +3107,8 @@ func (h5 *HDF5) findVariable(varName string) *object {
 			hasCoordinates = true
 		}
 	}
-	if hasClass && !hasCoordinates && !hasName {
+	// If the field is called "data" I want to get it regardless of its attributes
+	if hasClass && !hasCoordinates && !hasName && varName != "data" {
 		logger.Info("doesn't have name")
 		return nil
 	}
@@ -3262,12 +3263,12 @@ func (h5 *HDF5) ListDimensions() []string {
 	var ret []string
 	children := h5.groupObject.sortChildren()
 	for _, obj := range children {
-		if obj.isGroup {
+		if obj.isGroup && len(obj.sortChildren()) == 0 {
 			continue
 		}
 		hasClass := false
 		hasCoordinates := false
-		hasName := false
+		hasName := false //TODO do I need to delete this?
 		for _, a := range obj.attrlist {
 			switch a.name {
 			case "CLASS":
@@ -3299,7 +3300,6 @@ func (h5 *HDF5) GetDimension(name string) (uint64, bool) {
 		}
 		hasClass := false
 		hasCoordinates := false
-		hasName := false
 		for _, a := range obj.attrlist {
 			switch a.name {
 			case "CLASS":
@@ -3308,14 +3308,13 @@ func (h5 *HDF5) GetDimension(name string) (uint64, bool) {
 				nameValue := a.value.(string)
 				if !strings.HasPrefix(nameValue, "This is a netCDF dimension") {
 					logger.Info("found name", nameValue)
-					hasName = true
 				}
 			case "_Netcdf4Coordinates":
 				logger.Info("Found _Netcdf4Coordinates")
 				hasCoordinates = true
 			}
 		}
-		if hasClass && !hasCoordinates && !hasName {
+		if hasClass && !hasCoordinates {
 			if obj.name == name {
 				return obj.objAttr.dimensions[0], true
 			}
@@ -3545,13 +3544,14 @@ func (h5 *HDF5) GetVariable(varName string) (av *api.Variable, err error) {
 		logger.Infof("variable %s not found", varName)
 		return nil, ErrNotFound
 	}
-	data := h5.getData(found)
+	data := h5.getData(found) // TODO I NEED TO CHECK WHETHER THIS STILL DOESN'T WORK FOR IMAGES
 	if data == nil {
 		return nil, ErrNotFound
 	}
 	h5.sortAttrList(found)
 	dims := h5.getDimensions(found)
 	attrs := h5.getAttributes(found.attrlist)
+
 	return &api.Variable{
 			Values:     data,
 			Dimensions: dims,
@@ -3690,7 +3690,7 @@ func (h5 *HDF5) ListVariables() []string {
 						logger.Info("Found _Netcdf4Coordinates")
 						hasCoordinates = true
 					}
-					if hasClass && !hasCoordinates && !hasName {
+					if hasClass && !hasCoordinates && !hasName && o.name != "data" {
 						logger.Info("skip because", o.name, "is a dimension=", o.objAttr.dimensions)
 						continue
 					}
