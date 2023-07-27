@@ -1,4 +1,4 @@
-module github.com/batchatco/go-native-netcdf
+module github.com/jpmono416/go-native-netcdf
 
 go 1.14
 
