@@ -21,9 +21,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/batchatco/go-native-netcdf/internal"
-	"github.com/batchatco/go-native-netcdf/netcdf/api"
 	"github.com/batchatco/go-thrower"
+	"github.com/jpmono416/go-native-netcdf/internal"
+	"github.com/jpmono416/go-native-netcdf/netcdf/api"
 )
 
 // Magic number at the head of a valid HDF5 file

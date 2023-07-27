@@ -1,7 +1,7 @@
 package hdf5
 
 import (
-	"github.com/batchatco/go-native-netcdf/netcdf/util"
+	"github.com/jpmono416/go-native-netcdf/netcdf/util"
 )
 
 // Adds callbacks to the standard OrderedMap so we can print

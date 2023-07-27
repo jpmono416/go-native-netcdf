@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/batchatco/go-native-netcdf/netcdf/api"
-	"github.com/batchatco/go-native-netcdf/netcdf/util"
+	"github.com/jpmono416/go-native-netcdf/netcdf/api"
+	"github.com/jpmono416/go-native-netcdf/netcdf/util"
 )
 
 type keyVal struct {
